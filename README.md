@@ -39,7 +39,7 @@ Refer `index.js` for the list of available wrapper functions
 
 All URIs are relative to **SUBMISSION_API_URL** configuration variable.
 
-* Review Types resource wrapper methods [getReview](app/ReviewTypesApi.md)
+* Review Types resource wrapper methods [getReview](app/ReviewTypes.md)
 
 * Reviews resource wrapper methods 
 

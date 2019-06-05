@@ -37,11 +37,11 @@ Refer `index.js` for the list of available wrapper functions
 
 ## Documentation for different resource wrapper methods
 
-All URIs are relative to **SUBMISSION_API_URL** configuration variable.
+ List of available resource wrapper api
+ 
+* Review Types resource wrapper methods [documentation](docs/ReviewTypesApi.md)
 
-* Review Types resource wrapper methods [getReview](app/ReviewTypes.md)
-
-* Reviews resource wrapper methods 
+* Reviews resource wrapper methods [documentation](docs/ReviewsApi.md)
 
 ## Authorization
 

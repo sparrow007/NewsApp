@@ -21,7 +21,7 @@ Method | HTTP request | Description
 # **searchSubmissions**
 > searchSubmissions(reqQuery)
 
-Search searchSubmissions. Link headers are sent back and they have rel set to prev, next, first, last and contain the relevant URL.
+Search search Submissions. Link headers are sent back and they have rel set to prev, next, first, last and contain the relevant URL.
 
 ### Example
 ```javascript
@@ -54,7 +54,7 @@ await submissionApiClient.searchSubmissions(reqQuery)
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reqQuery** | [**SearchReviewSummationsCriteria**](SearchReviewSummationsCriteria.md) | the search review summations criteria 
+ **reqQuery** | [**SearchSubmissionsCriteria**](SearchSubmissionsCriteria.md) | the search review summations criteria 
 
 ### Return type
 
@@ -160,7 +160,7 @@ await submissionApiClient.createSubmission(reqBody)
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reqBody** | [**ReviewSummationData**](ReviewSummationData.md) | the review summation data 
+ **reqBody** | [**SubmissionData**](SubmissionData.md) | the submission data 
 
 ### Return type
 
@@ -271,7 +271,7 @@ Name | Type | Description
 # **updateSubmission**
 > updateSubmission(submissionId, reqBody)
 
-Fully update review summation.
+Fully update submission.
 
 ### Example
 ```javascript
@@ -304,7 +304,7 @@ await submissionApiClient.updateReviewSummation(submissionId, reqBody)
 Name | Type | Description
 ------------- | ------------- | -------------
  **submissionId** | String | the submission id 
- **reqBody** | [**Submissions**](Submissions.md) | the submission data 
+ **reqBody** | [**SubmissionData**](SubmissionData.md) | the submission data 
 
 ### Return type
 
@@ -355,7 +355,7 @@ await submissionApiClient.patchSubmission(submissionId, reqBody)
 Name | Type | Description
 ------------- | ------------- | -------------
  **submissionId** | String | the review summation id 
- **reqBody** | [**ReviewSummationData**](ReviewSummationData.md) | the review summation data 
+ **reqBody** | [**SubmissionData**](SubmissionData.md) | the submission data 
 
 ### Return type
 
@@ -501,7 +501,9 @@ Name | Type | Description
 
 ### Return type
 
-null (empty response body) //artifact response
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**artifact** | **String** | Uploaded artifact name.
 
 ### Authorization
 
@@ -547,7 +549,7 @@ Name | Type | Description
 
 ### Return type
 
-null (empty response body) //array artifact response
+Array of [**SubmissionArtifact**](SubmissionArtifact.md)
 
 ### Authorization
 

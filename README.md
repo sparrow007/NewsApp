@@ -1,157 +1,157 @@
-# Review Summation Api
+# ChallengePhases Api
 
-All URIs are relative to **SUBMISSION_API_URL** configuration variable.
+All URIs are relative to **CHALLENGE_API_URL** configuration variable.
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**searchReviewSummations**](ReviewSummationApi.md#searchReviews) | **GET** /reviewsummations | Search review summations..
-[**headReviewSummations**](ReviewSummationApi.md#headReviews) | **HEAD** /reviewsummations | Same to search review summations, but only response status and headers information return.
-[**createReviewSummation**](ReviewSummationApi.md#createReview) | **POST** /reviewsummations | Create a review summation.
-[**getReviewSummation**](ReviewSummationApi.md#getReview) | **GET** /reviewsummations/{reviewSummationId} | Get the review summation.
-[**headReviewSummation**](ReviewSummationApi.md#headReview) | **HEAD** /reviewsummations/{reviewSummationId} | Same to get review summation, but only response status and headers information return.
-[**updateReviewSummation**](ReviewSummationApi.md#updateReview) | **PUT** /reviewsummations/{reviewSummationId} | Fully update review summation.
-[**patchReviewReviewSummation**](ReviewSummationApi.md#patchReview) | **PATCH** /reviewsummations/{reviewSummationId} | Partially update review summation.
-[**deleteReviewSummation**](ReviewSummationApi.md#deleteReview) | **DELETE** /reviewsummations/{reviewSummationId} | Delete the review summation.
+[**searchChallengePhases**](ChallengeTypesApi.md#searchchallengetypes) | **GET** /challengephases | Search challengeTypes.
+[**createChallengePhase**](ChallengeTypesApi.md#createchallengetype) | **POST** /challengephases | Create a challengeType.
+[**getChallengePhase**](ChallengeTypesApi.md#getchallengetype) | **GET** /challengephases/:challengePhaseId | Get the challengeType.
+[**updateChallengePhase**](ChallengeTypesApi.md#updatechallengetype) | **PUT** /challengephases/:challengePhaseId | Fully update challengeType.
+[**patchChallengePhase**](ChallengeTypesApi.md#patchchallengetype) | **PATCH** /challengephases/:challengePhaseId | Partially update challengeType.
+[**deleteChallengePhase**](ChallengeTypesApi.md#patchchallengetype) | **DELETE** /challengephases/:challengePhaseId | Delete the Challenge phase with provided challenge phase id.
 
-<a name="searchReviewSummations"></a>
-# **searchReviewSummations**
-> searchReviewSummations(reqQuery)
+<a name="searchChallengeTypes"></a>
+# **searchChallengePhases**
+> searchChallengePhases(reqQuery[, jwt])
 
-Search review summations. Link headers are sent back and they have rel set to prev, next, first, last and contain the relevant URL.
+Search challengePhase. Link headers are sent back and they have rel set to prev, next, first, last and contain the relevant URL.
 
 ### Example
 ```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
+const challengeApi = require('topcoder-challenge-api-wrapper')
+const challengeApiM2MClient = challengeApi(_.pick(config,
       ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
+        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
         'AUTH0_PROXY_SERVER_URL']))
+
+const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
+      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
+       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
+
+const challengeApiJwtMethodArgClient = challengeApi(_.pick(config,
+      ['CHALLENGE_API_URL']))
 
 const reqQuery = {
   page: 1,
   perPage: 10,
-  submissionId": a12a4180-65aa-42ec-a945-5fd21dec1567
+  name: 'test111'
 }
 
+
 // Promise model
-submissionApiClient
-  .searchReviewSummations(reqQuery)
+challengeApiM2MClient
+  .searchChallengePhases(reqQuery)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiUserCredentialsClient
+  .searchChallengePhases(reqQuery)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+
+challengeApiJwtMethodArgClient
+  .searchChallengePhases(reqQuery, config.JWT)
+// or
+// challengeApiJwtMethodArgClient
+//   .searchChallengeTypes(reqQuery)
   .then(result => console.log(result.body, result.status))
   .catch(err => console.log(err))
 
 // Async / await model
-await submissionApiClient.searchReviewSummations(reqQuery)
+await challengeApiM2MClient.searchChallengePhases(reqQuery)
+
+await challengeApiUserCredentialsClient.searchChallengePhases(reqQuery)
+
+await challengeApiJwtMethodArgClient.searchChallengePhases(reqQuery, config.JWT)
+// or
+// await challengeApiJwtMethodArgClient.searchChallengePhases(reqQuery)
 ```
 
 ### Parameters
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reqQuery** | [**SearchReviewsCriteria**](SearchReviewsCriteria.md)| the search reviews criteria
+ **reqQuery** | [**SearchChallengePhasesCriteria**](SearchChallengePhasesCriteria.md)| the search challengePhases criteria
+ **jwt**      | String | the optional json web token
 
 ### Return type
 
-Array of [**ReviewSummation**](ReviewSummation.md)
+Array of [**ChallengePhase**](ChallengePhase.md)
 
 ### Authorization
 
-[Bearer](../README.md#authorization)
+**None**
 
 ### HTTP request headers
 
  - **Content-Type**: application/json
  - **Accept**: application/json
 
-<a name="headReviewSummations"></a>
-# **headReviews**
-> headReviewSummations(reqQuery)
+<a name="createChallengePhase"></a>
+# **createChallengePhase**
+> createChallengePhase(reqBody[, jwt])
 
-Same to search reviews, but only response status and headers information return.
-
-### Example
-```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const reqQuery = {
-  page: 1,
-  perPage: 10,
-  submissionId: a12a4180-65aa-42ec-a945-5fd21dec1567
-}
-
-// Promise model
-submissionApiClient
-  .headReviewSummations(reqQuery)
-  .then(result => console.log(result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await submissionApiClient.headReviewSummations(reqQuery)
-```
-
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **reqQuery** | [**SearchReviewsCriteria**](SearchReviewsCriteria.md)| the search reviews criteria
-
-### Return type
-
-null (empty response body)
-
-### Authorization
-
-[Bearer](../README.md#authorization)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-<a name="createReviewSummation"></a>
-# **createReview**
-> createReviewSummation(reqBody)
-
-Create a review.
+Create a new challenge phase in the system. Only admins can access this endpoint.
 
 ### Example
 ```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
+const challengeApi = require('topcoder-challenge-api-wrapper')
+const challengeApiM2MClient = challengeApi(_.pick(config,
       ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
+        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
         'AUTH0_PROXY_SERVER_URL']))
+
+const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
+      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
+       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
+
+const challengeApiJwtMethodArgClient = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
 
 const reqBody = {
-   submissionId: a12bc180-43aa-42ec-a945-5fd21dec1567,
-   aggregateScore: 97.8,
-   scoreCardId: "a12bc180-65aa-42aa-a945-5fd21dec1567,
-   isPassing : true,
-   metadata: {abc: 'def'}
+  name: 'Code',
+  description: 'Code',
+  predecessor: 'code-string'
+  isActive: true,
+  duration: 15
 }
 
+
 // Promise model
-submissionApiClient
-  .createReviewSummation(reqBody)
+challengeApiM2MClient
+  .createChallengePhase(reqBody)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiUserCredentialsClient
+  .createChallengePhase(reqBody)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiJwtMethodArgClient
+  .createChallengePhase(reqBody, config.JWT)
   .then(result => console.log(result.body, result.status))
   .catch(err => console.log(err))
 
 // Async / await model
-await submissionApiClient.createReviewSummation(reqBody)
+await challengeApiM2MClient.createChallengePhase(reqBody)
+
+await challengeApiUserCredentialsClient.createChallengePhase(reqBody)
+
+await challengeApiJwtMethodArgClient.createChallengePhase(reqBody, config.JWT)
 ```
 
 ### Parameters
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reqBody** | [**ReviewData**](ReviewData.md)| the review data
+ **reqBody** | [**ChallengePhaseData**](ChallengePhaseData.md)| the challengeType data
+ **jwt**      | String | the optional json web token
 
 ### Return type
 
-[**ReviewSummationApi**](ReviewSummationApi.md)
+[**ChallengePhase**](ChallengePhase.md)
 
 ### Authorization
 
@@ -162,138 +162,142 @@ Name | Type | Description
  - **Content-Type**: application/json
  - **Accept**: application/json
 
-<a name="getReview"></a>
-# **getReviewSummation**
-> getReviewSummation(reviewSummationId)
+<a name="getChallengePhase"></a>
+# **getChallengePhase**
+> getChallengePhase(challengePhaseId[, jwt])
 
-Get the review summation by id.
+Get the challengePhase by id.
 
 ### Example
 ```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
+const challengeApi = require('topcoder-challenge-api-wrapper')
+const challengeApiM2MClient = challengeApi(_.pick(config,
       ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
+        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
         'AUTH0_PROXY_SERVER_URL']))
 
-const reviewSummationId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
+const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
+      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
+       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
+
+const challengeApiJwtMethodArgClient = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
+
+const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
 
 // Promise model
-submissionApiClient
-  .getReviewSummation(reviewSummationId)
+challengeApiM2MClient
+  .getChallengePhase(challengePhaseId)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiUserCredentialsClient
+  .getChallengePhase(challengePhaseId)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiJwtMethodArgClient
+  .getChallengePhase(challengeTypeId, config.JWT)
+// or
+// challengeApiJwtMethodArgClient
+//   .getChallengeType(challengePhaseId)
   .then(result => console.log(result.body, result.status))
   .catch(err => console.log(err))
 
 // Async / await model
-await submissionApiClient.getReviewSummation(reviewSummationId)
+await challengeApiM2MClient.getChallengeType(challengePhaseId)
+
+await challengeApiUserCredentialsClient.getChallengePhase(challengePhaseId)
+
+await challengeApiJwtMethodArgClient.getChallengePhase(challengePhaseId, config.JWT)
+// or
+// await challengeApiJwtMethodArgClient.getChallengePhase(challengePhaseId)
+
 ```
 ### Parameters
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reviewSummationId** | String | the review summation id
+ **challengePhaseId** | String | the challengePhase id
+ **jwt**      | String | the optional json web token
 
 ### Return type
 
-[**ReviewSummationApi**](ReviewSummationApi.md)
+[**ChallengePhase**](ChallengePhase.md)
 
 ### Authorization
 
-[Bearer](../README.md#authorization)
+**None**
 
 ### HTTP request headers
 
  - **Content-Type**: application/json
  - **Accept**: application/json
 
-<a name="headReview"></a>
-# **headReviewSummation**
-> headReviewSummation(reviewSummationId)
+<a name="updateChallengePhase"></a>
+# **updateChallengePhase**
+> updateChallengePhase(challengePhaseId, reqBody[, jwt])
 
-Same to get review summation, but only response status and headers information return.
-
-### Example
-```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const reviewSummationId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
-
-// Promise model
-submissionApiClient
-  .headReviewSummation(reviewSummationId)
-  .then(result => console.log(result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await submissionApiClient.headReviewSummation(reviewSummationId)
-```
-
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **reviewSummationId** | String | the review summation id
-
-### Return type
-
-[**ReviewSummationApi**](ReviewSummationApi.md)
-
-### Authorization
-
-[Bearer](../README.md#authorization)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-<a name="updateReview"></a>
-# **updateReviewSummation**
-> updateReviewSummation(reviewSummationId, reqBody)
-
-Fully update review summation.
+Fully update challenge phase.
 
 ### Example
 ```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
+const challengeApi = require('topcoder-challenge-api-wrapper')
+const challengeApiM2MClient = challengeApi(_.pick(config,
       ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
+        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
         'AUTH0_PROXY_SERVER_URL']))
 
-const reviewSummationId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
+const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
+      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
+       'TC_CLIENT_V2_CONNECTION', 'CHALLENGE_API_URL']))
+
+const challengeApiJwtMethodArg = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
+
+const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
 const reqBody = {
-   submissionId: a12bc180-43aa-42ec-a945-5fd21dec1567,
-   aggregateScore: 97.8,
-   scoreCardId: "a12bc180-65aa-42aa-a945-5fd21dec1567,
-   isPassing : true,
-   metadata: {abc: 'def'}
+ name: 'Code', 
+ description : 'code string', 
+ predecessor : 'valuetest', 
+ isActive : false,
+ duration : 112
 }
 
+
 // Promise model
-submissionApiClient
-  .updateReviewSummation(reviewSummationId, reqBody)
+challengeApiM2MClient
+  .updateChallengePhase(challengePhaseId, reqBody)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiUserCredentialsClient
+  .updateChallengePhase(challengePhaseId, reqBody)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiJwtMethodArgClient
+  .updateChallengePhase(challengePhaseId, reqBody, config.JWT)
   .then(result => console.log(result.body, result.status))
   .catch(err => console.log(err))
 
 // Async / await model
-await submissionApiClient.updateReviewSummation(reviewSummationId, reqBody)
+await challengeApiM2MClient.updateChallengePhase(challengePhaseId, reqBody)
+
+await challengeApiUserCredentialsClient.updateChallengePhase(challengePhaseId, reqBody)
+
+await challengeApiJwtMethodArgClient.updateChallengePhase(challengePhaseId, reqBody, config.JWT)
 ```
 
 ### Parameters
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reviewSummationId** | String | the review summation id
- **reqBody** | [**ReviewData**](ReviewData.md)| the review summation data
+ **challengePhaseId** | String | the challengePhase id
+ **reqBody** | [**ChallengePhaseData**](ChallengePhaseData.md)| the challengeType data
+ **jwt**      | String | the optional json web token
 
 ### Return type
 
-[**ReviewSummationApi**](ReviewSummationApi.md)
+[**ChallengePhase**](ChallengePhase.md)
 
 ### Authorization
 
@@ -304,49 +308,68 @@ Name | Type | Description
  - **Content-Type**: application/json
  - **Accept**: application/json
 
-<a name="patchReview"></a>
-# **patchReviewReviewSummation**
-> patchReviewReviewSummation(reviewSummationId, reqBody)
+<a name="patchChallengePhase"></a>
+# **patchChallengePhase**
+> patchChallengePhase(challengePhaseId, reqBody[, jwt])
 
-Partially update review summation.
+Partially update challengePhase.
 
 ### Example
 ```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
+const challengeApi = require('topcoder-challenge-api-wrapper')
+const challengeApiM2MClient = challengeApi(_.pick(config,
       ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
+        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
         'AUTH0_PROXY_SERVER_URL']))
 
-const reviewSummationId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
+const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
+      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
+       'TC_CLIENT_V2_CONNECTION', 'CHALLENGE_API_URL']))
+
+const challengeApiJwtMethodArg = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
+
+const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
 const reqBody = {
-  submissionId: a12bc180-43aa-42ec-a945-5fd21dec1567,
-   aggregateScore: 97.8,
-   scoreCardId: "a12bc180-65aa-42aa-a945-5fd21dec1567,
-   isPassing : true,
-   metadata: {abc: 'def'}
+  name: 'BugTest',
+  description: 'Bug test',
+  isActive: false
 }
 
 // Promise model
-submissionApiClient
-  .patchReviewReviewSummation(reviewSummationId, reqBody)
+challengeApiM2MClient
+  .patchChallengePhase(challengePhaseId, reqBody)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiUserCredentialsClient
+  .patchChallengePhase(challengePhaseId, reqBody)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiJwtMethodArgClient
+  .patchChallengePhase(challengePhaseId, reqBody, config.JWT)
   .then(result => console.log(result.body, result.status))
   .catch(err => console.log(err))
 
 // Async / await model
-await submissionApiClient.patchReviewReviewSummation(reviewSummationId, reqBody)
+await challengeApiM2MClient.patchChallengePhase(challengePhaseId, reqBody)
+
+await challengeApiUserCredentialsClient.patchChallengePhase(challengePhaseId, reqBody)
+
+await challengeApiJwtMethodArgClient.patchChallengePhase(challengePhaseId, reqBody, config.JWT)
 ```
 
 ### Parameters
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reviewSummationId** | String | the review summation id
- **reqBody** | [**ReviewData**](ReviewData.md)| the review summation data
+ **challengePhaseId** | String | the challengePhaseId id
+ **reqBody** | [**ChallengePhaseData**](ChallengePhaseData.md)| the challengeType data
+ **jwt**      | String | the optional json web token
 
 ### Return type
 
-[**ReviewSummationApi**](ReviewSummationApi.md)
+[**ChallengePhase**](ChallengePhase.md)
 
 ### Authorization
 
@@ -356,46 +379,72 @@ Name | Type | Description
 
  - **Content-Type**: application/json
  - **Accept**: application/json
+ 
+<a name="deleteChallengePhase"></a>
+# **deleteChallengePhase**
+> deleteChallengePhase(challengePhaseId[, jwt])
 
-<a name="deleteReviewSummation"></a>
-# **deleteReviewSummation**
-> deleteReviewSummation(reviewSummationId)
-
-Delete review summation by id.
+delete the challengePhase by id.
 
 ### Example
 ```javascript
-const submissionApi = require('tc-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config,
+const challengeApi = require('topcoder-challenge-api-wrapper')
+const challengeApiM2MClient = challengeApi(_.pick(config,
       ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL',
+        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
         'AUTH0_PROXY_SERVER_URL']))
 
-const reviewSummationId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
+const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
+      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
+       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
+
+const challengeApiJwtMethodArgClient = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
+
+const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
 
 // Promise model
-submissionApiClient
-  .deleteReviewSummation(reviewSummationId)
-  .then(result => console.log(result.status))
+challengeApiM2MClient
+  .deleteChallengePhase(challengePhaseId)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiUserCredentialsClient
+  .deleteChallengePhase(challengePhaseId)
+  .then(result => console.log(result.body, result.status))
+  .catch(err => console.log(err))
+
+challengeApiJwtMethodArgClient
+  .deleteChallengePhase(challengeTypeId, config.JWT)
+// or
+// challengeApiJwtMethodArgClient
+//   .deleteChallengePhase(challengePhaseId)
+  .then(result => console.log(result.body, result.status))
   .catch(err => console.log(err))
 
 // Async / await model
-await submissionApiClient.deleteReviewSummation(reviewSummationId)
-```
+await challengeApiM2MClient.deleteChallengePhase(challengePhaseId)
 
+await challengeApiUserCredentialsClient.deleteChallengePhase(challengePhaseId)
+
+await challengeApiJwtMethodArgClient.deleteChallengePhase(challengePhaseId, config.JWT)
+// or
+// await challengeApiJwtMethodArgClient.deleteChallengePhase(challengePhaseId)
+
+```
 ### Parameters
 
 Name | Type | Description
 ------------- | ------------- | -------------
- **reviewSummationId** | String | the review summation id
+ **challengePhaseId** | String | the challengePhase id
+ **jwt**      | String | the optional json web token
 
 ### Return type
 
-null (empty response body)
+[**ChallengePhase**](ChallengePhase.md)
 
 ### Authorization
 
-[Bearer](../README.md#authorization)
+**None**
 
 ### HTTP request headers
 

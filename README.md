@@ -2,31 +2,44 @@
 
 ## Dependencies
 
-- nodejs https://nodejs.org/en/ (v10+)
-- Kafka
-- Mongodb
+- [nodejs](https://nodejs.org/en/)
+- [kafka](https://kafka.apache.org/)
+- [Mongodb](https://www.mongodb.com/)
+- [Rocket.chat](https://rocket.chat/)
+- [vanillaforums](https://vanillaforums.com/)
+
 
 ## Configuration
 
-Configuration for the processor is at `config/default.js`.
-The following parameters can be set in config files or in env variables
+Please set the following environment variables to configure the app.
+For quick-setup while development, use a `.env` file, and run `docker-compose up -d`, and then start the processor.
 
-- LOG_LEVEL: the log level; default value: 'debug'
-- TC_AUTHN_URL: TC_AUTHN_URL, used to get the access token
-- TC_USERNAME : TC USERNAME, used to make TC_AUTHN_REQUEST_BODY for getting the access token
-- TC_PASSWORD: TC PASSWORD, used to make TC_AUTHN_REQUEST_BODY for getting the access token
-- TC_CLIENT_ID: TC CLIENT ID is client id which is used to make TC_AUTHN_REQUEST_BODY for getting the access token
-- CLIENT_V2CONNECTION : CLIENT V2 CONNECTION, used to make TC_AUTHN_REQUEST_BODY for getting the access token
-- TC_AUTHZ_URL: TC AUTHZ URL , used to get the access token
-- KAFKA_URL : comma separated Kafka hosts for consumer to listen; default value: 'localhost:9092'
-- KAFKA_CLIENT_CERT: Kafka connection certificate, optional; default value is undefined; if not provided, then SSL connection is not used, direct insecure connection is used; if provided, it can be either path to certificate file or certificate content
-- KAFKA_CLIENT_CERT_KEY: Kafka connection private key, optional; default value is undefined; if not provided, then SSL connection is not used, direct insecure connection is used; if provided, it can be either path to private key file or private key content
-- MONGODB_URL: Mongodb uri , used to get connected with mongodb
-- USER_API_URL: User api url, used to get the user info ; default value : 'https://api.topcoder-dev.com/v3'
-- CREATE_CHALLENGE_TOPIC: create challenge kafka topic; default value : ''challenge.notification.create'
-- CHALLENGE_EVENT_TOPIC : create challenge event kafka topic which is user registration and unregistration from challenge; default value: 'challenge.notification.events'
-- CREATE_CHALLENGE_RESOURCE_TOPIC : create challenge resource kafka topic; default value: 'challenge.action.resource.create'
-- DELETE_CHALLENGE_RESOURCE_TOPIC: delete challenge resource kafka topic; default value: 'challenge.action.resource.delete'
+| Name | Description | Default value |
+| ---- | ----------- | ------------- |
+| DISABLE_LOGGING | Whether to disable logging | `false` |
+| LOG_LEVEL | Logging level | `debug` |
+| KAFKA_URL | Kafka connection string | `localhost:9092` |
+| KAFKA_CLIENT_CERT | Kafka client certificate (SSL). This gets precedence over the file path. | `undefined` |
+| KAFKA_CLIENT_CERT_PATH | Path to kafka client certificate (SSL) file. | `./config/kafka_client.cer` |
+| KAFKA_CLIENT_CERT | Kafka client key (SSL). This gets precedence over the file path. | `undefined` |
+| KAFKA_CLIENT_KEY_PATH | Path to kafka client key (SSL) file. | `./config/kafka_client.key` |
+| KAFKA_SSL_PASSPHRASE | Passphrase (for SSL) | `secret` |
+| ROCKETCHAT_PROTOCOL | Rocketchat Protocol | `http` |
+| ROCKETCHAT_HOST | Rocketchat Host | `127.0.0.1`
+| ROCKETCHAT_PORT | Rocketchat Port | `3000` |
+| ROCKETCHAT_USERNAME | Rocketchat Username | `rocket` |
+| ROCKETCHAT_PASSWORD | Rocketchat Password | `rocket` |
+| TOPCODER_AUTH0_AUDIENCE | Topcoder Auth0 Audience | `undefined` |
+| TOPCODER_AUTH0_CLIENT_ID | Topcoder Auth0 client ID | `undefined` |
+| TOPCODER_AUTH0_CLIENT_SECRET | Topcoder Auth0 Client Secret | `undefined` |
+| TOPCODER_AUTH0_PROXY_SERVER_URL | Topcoder Auth0 Proxy Server URL | `https://auth0proxy.topcoder-dev.com/token` |
+| TOPCODER_AUTH0_URL | Topcoder Auth0 URL | `undefined` |
+| TOPCODER_API_URL | Topcoder API URL | `https://api.topcoder-dev.com` |
+| TOPCODER_ROOT_URL | Topcoder Root URL | `https://topcoder-dev.com` |
+| MONGODB_URL | Mongodb URL | `mongodb://localhost:27017/challengeForumDB` |
+| VANILLAFORUM_ACCESS_TOKEN | Vanilla forum access token | |
+| VANILLAFORUM_API_URL | Vanilla forum API URL | `localhost/vanilla/api/v2` |
+| Processor_Type | Processor type either `Rocket.Chat` or `VanillaForum` | `VanillaForum` |
 
 ## Heroku deployment 
 
@@ -43,6 +56,33 @@ $ heroku git:remote -a <your project>
 $ git add .
 $ git commit -am "make it better"
 $ git push heroku master
+```
+
+Then, set the environment variables using the following commands, changing the values as necessary:
+
+```bash
+# Set the Kafka client certificate and client key
+# Replace ./config/kafka_client.cer and ./config/kafka_client.key with the path to the certificate and key
+$ heroku config:set -a <app_name> \
+  KAFKA_CLIENT_CERT="$(cat ./config/kafka_client.cer)" \
+  KAFKA_CLIENT_CERT_KEY="$(cat ./config/kafka_client.key)"
+
+# Set the other environment variables
+$ heroku config:set -a <app_name> \
+  TOPCODER_AUTH0_PROXY_SERVER_URL="<value>" \
+  TOPCODER_AUTH0_URL="<value>" \
+  TOPCODER_API_URL="<value>" \
+  TOPCODER_ROOT_URL="<value>" \
+  KAFKA_URL="<value>" \
+  ROCKETCHAT_PROTOCOL="<value>" \
+  ROCKETCHAT_HOST="<value>" \
+  ROCKETCHAT_PORT="<value>" \
+  ROCKETCHAT_USERNAME="<value>" \
+  ROCKETCHAT_PASSWORD="<value>" \
+  MONGODB_URL="<value>" \
+  VANILLAFORUM_ACCESS_TOKEN = "<value>" \
+  VANILLAFORUM_API_URL="<value>" \
+  Processor_Type= "<value>"
 ```
 #### NOTE you should have Procfile in your root directory for running your node app and below code in the procfile
 

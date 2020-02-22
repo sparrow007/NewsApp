@@ -41,6 +41,19 @@ For quick-setup while development, use a `.env` file, and run `docker-compose up
 | VANILLAFORUM_API_URL | Vanilla forum API URL | `localhost/vanilla/api/v2` |
 | Processor_Type | Processor type either `Rocket.Chat` or `VanillaForum` | `VanillaForum` |
 
+## Vanilla Forums Layout
+
+-After setting up the xampp and vanilla forums successfully
+-Login as admin and go to settings
+-In settings go to layout and select these settings for better visualization
+
+-In Homepage section select categoies option
+
+-In Discussions section select modern layout
+
+-In Categories section select mixed layout and save.
+
+
 ## Heroku deployment 
 
 - Download and install the heroku CLI, download and installation link `https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up`

@@ -1,117 +1,85 @@
-## Mobile Movies API Wrapper
+# Topcoder - Challenge Forum Processor Verification
 
-Wrapper library for Mobile Movies API
+- start the kafka server
+- start the processor by npm start or node src/app.js
+- either use local mongodb or mLab (set config using MONGODB_URL)
 
-## How to use this Wrapper
+#### Note If you are using the host url please add the KAFKA_CLIENT_CERT and KAFKA_CLIENT_CERT_KEY
 
-1. Download the source code of the wrapper and install the wrapper to your own project:
+## Issue 1
 
-```bash
-    npm install path/to/mobile-movies-api-wrapper
-```
+#### For local setup
+- start kafka-console-producer to write messages to `challenge.notification.create` topic:
+  `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic challenge.notification.create`
 
-2. Create an instance of this wrapper as below
+- write message of `Create Challenge` in the corresponding producer:
 
-```javascript
-const wrapper = require('mobile-movies-api-wrapper')
-const config = {
-  MOBILE_MOVIES_API_URL,
-  authToken,
-  exhibitorCode
-}
-const client = wrapper(config)
-```
+`{"topic":"challenge.notification.create","originator":"topcoder-challenges-api","timestamp":"2019-11-25T23:49:55.247Z","mime-type":"application/json","payload":{"id":"5d9618ad-1937-47aa-b27d-e53680228925","created":"2019-11-25T23:49:55.241Z","createdBy":"TonyJ","phases":[{"description":"Registration Phase","duration":72,"id":"a93544bc-c165-4af4-b55e-18f3593b457a","isActive":true,"name":"Registration"},{"description":"Submission Phase","duration":72,"id":"6950164f-3c5e-4bdc-abc8-22aaf5a1bd49","isActive":true,"name":"Submission","predecessor":"a93544bc-c165-4af4-b55e-18f3593b457a"},{"description":"Review Phase","duration":"48","id":"aa5a3f78-79e0-4bf7-93ff-b11e8f5b398b","isActive":true,"name":"Review","predecessor":"6950164f-3c5e-4bdc-abc8-22aaf5a1bd49"},{"description":"Appeals Phase","duration":24,"id":"1c24cfb3-5b0a-4dbd-b6bd-4b0dff5349c6","isActive":true,"name":"Appeals","predecessor":"aa5a3f78-79e0-4bf7-93ff-b11e8f5b398b"},{"description":"Appeals Response Phase","duration":24,"id":"797a6af7-cd3f-4436-9fca-9679f773bee9","isActive":true,"name":"Appeals Response","predecessor":"1c24cfb3-5b0a-4dbd-b6bd-4b0dff5349c6"}],"typeId":"45415132-79fa-4d13-a9ac-71f50020dc10","track":"DEVELOP","name":"Rodeo_23","description":"Jhons news","reviewType":"community","tags":["Twilio"],"groups":[],"prizeSets":[{"type":"Challenge prizes","prizes":[{"type":"money","value":100}]}],"startDate":"2019-11-26T00:49:22.517Z","timelineTemplateId":"a93544bc-c165-4af4-b55e-18f3593b457a","projectId":127,"status":"Active"}}`
+  
+- consumer listen to challenge.notification.create will give the output
+`Rocket chat is ready
+info: Private group / room created:
+info: Data stored sucessfully`
 
-- authToken - the authorization token.
-- exhibitorCode - the exhibitor code (includes Prospector, RTSDemo, CinemaWest, BandBTheaters).
-- MOBILE_MOVIES_API_URL - Mobile Movies API URL. E.g. `https://wmp-mobileapi-dev.azurewebsites.net`
+you can login to rocket chat with your admin configuration and then output will be 
 
-3. Every function in this wrapper will return a promise, Handling promises is at the caller end. Call the functions with appropriate arguments
+#### Note : you can also set the configuration for kafka host url and go to `https://challenges.topcoder-dev.com/` for launch the new challenge
 
-E.g.
+![issue1](https://user-images.githubusercontent.com/53591918/69792620-f8a8fd80-11ec-11ea-897a-300f651023a3.png)
 
-```node
-const theaterId = '7871'
-const authToken = 'vSD45gbEgd5ggevbxjhg4655bvE='
-const exhibitorCode = 'Prospector'
-const reqQuery = {
-  firstDate: '2018-07-16',
-  lastDate: '2019-12-20'
-}
+## Issue 2
 
-// promise
-client
-  .getSingleTheater(theaterId, reqQuery, authToken, exhibitorCode)
-  .then((result) => console.log(result.body, result.status))
-  .catch((err) => console.log(err))
+#### local setup 
 
-// async/await
-const result = await client.getSingleTheater(theaterId, reqQuery, authToken, exhibitorCode)
-```
+- start kafka-console-producer to write messages to `challenge.notification.events` topic:
+  `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic challenge.notification.events`
+  
+- write message of `Challenge event` for user registration in the corresponding producer:  
 
-Refer `index.js` for the list of available wrapper functions
+`{   "topic": "challenge.notification.events",   "originator": "topcoder-challenges-api",   "timestamp": "2019-11-24T23:26:28.926Z",   "mime-type": "application/json",   "payload": {     "type": "USER_REGISTRATION",     "data": {       "challengeId": "b0b96d7f-2e7b-4a1d-a894-165e55b01d2d",       "userId": 40158988     }   } }`
 
-## Documentation for wrapper methods
+For checking the output of adding the user whose register to challenge go to rocket chat and login.
 
-All URIs are relative to **MOBILE_MOVIES_API_URL** configuration variable.
+- write message of `Challenge event` for user unregistration in the corresponding producer: 
+`{   "topic": "challenge.notification.events",   "originator": "topcoder-challenges-api",   "timestamp": "2019-11-24T23:26:28.926Z",   "mime-type": "application/json",   "payload": {     "type": "USER_UNREGISTRATION",     "detail": {       "challengeId": "b0b96d7f-2e7b-4a1d-a894-165e55b01d2d",       "userId": 40158988     }   } }`
 
-### Theater Detail wrapper methods
+both output will be 
 
-| Method                                                            | HTTP request                            | Description                              |
-| ----------------------------------------------------------------- | --------------------------------------- | ---------------------------------------- |
-| [**getTheaters**](docs/TheaterDetailApi.md#gettheaters)           | **GET** /api/theaters                   | Get a list of Theaters for an Exhibitor. |
-| [**getSingleTheater**](docs/TheaterDetailApi.md#getsingletheater) | **GET** /api/theaters/single/:theaterId | Get a theater detail by theaterId.       |
+![issue 2](https://user-images.githubusercontent.com/53591918/69793790-1f683380-11ef-11ea-8f8c-343681cacbc8.png)
 
-### Movie Detail wrapper methods
+## Issue 3
 
-| Method                                                      | HTTP request                        | Description                                        |
-| ----------------------------------------------------------- | ----------------------------------- | -------------------------------------------------- |
-| [**getSingleMovie**](docs/MovieDetailApi.md#getsinglemovie) | **GET** /api/movies/single/:movieId | Get a movie detail by movieId.                     |
-| [**getNowPlaying**](docs/MovieDetailApi.md#getnowplaying)   | **GET** /api/movies/nowplaying      | Get a list of Now Playing movies for an Exhibitor. |
-| [**getComingSoon**](docs/MovieDetailApi.md#getcomingsoon)   | **GET** /api/movies/comingsoon      | Get a list of Coming Soon movies for an Exhibitor. |
+Used the mongodb for storing the challengeId and groupId 
+#### local setup
 
-### Emergency Messages wrapper methods
+- After creating the challenge (issue1) you can use the robomongo tool for database
 
-| Method                                                                        | HTTP request           | Description                   |
-| ----------------------------------------------------------------------------- | ---------------------- | ----------------------------- |
-| [**getEmergencyMessages**](docs/EmergencyMessagesApi.md#getemergencymessages) | **GET** /api/emergency | Get EmergencyMessage objects. |
+#### Mlab setup
 
-### Orders wrapper methods
+- You can also view the data in mlab
 
-| Method                                                   | HTTP request                         | Description                                      |
-| -------------------------------------------------------- | ------------------------------------ | ------------------------------------------------ |
-| [**getOrderSummary**](docs/OrdersApi.md#getordersummary) | **GET** /api/orders/summary/:orderId | Get a summary of a (completed) order by orderId. |
-
-### Compatibility wrapper methods
-
-| Method                                                            | HTTP request               | Description                    |
-| ----------------------------------------------------------------- | -------------------------- | ------------------------------ |
-| [**getCompatibility**](docs/CompatibilityApi.md#getcompatibility) | **GET** /api/compatibility | Get compatibility information. |
+![issue3](https://user-images.githubusercontent.com/53591918/69794366-1f1c6800-11f0-11ea-9fd3-2fbb440711fe.png)
 
 
-## Lint
+## Issue 4
 
-- Run lint: `npm run lint`
-- Run lint fix: `npm run lint:fix`
+#### local setup 
 
-## Running tests
+- start kafka-console-producer to write messages to `challenge.action.resource.create` topic:
+  `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic challenge.action.resource.create`
+  
+- write message of `Challenge Resource create` for adding user in the corresponding producer: 
 
-### Preparation
+`{   "topic": "challenge.action.resource.create,   "originator": "topcoder-resource-api",   "timestamp": "2019-11-24T23:26:28.926Z",   "mime-type": "application/json",   "payload": {   "id": "47749b23-0e8c-44e0-b180-ae9364ffec37",   "challengeId": "5d9618ad-1937-47aa-b27d-e53680228925",   "memberId": "40154012",   "memberHandle": "tonyj",   "roleId": "cfe12b3f-2a24-4639-9d8b-ec86726f76bd" } }`
 
-Run `npm install` to install dependencies.
 
-To run tests alone
+- start kafka-console-producer to write messages to `challenge.action.resource.delete` topic:
+  `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic challenge.action.resource.delete`
+  
+- write message of `Challenge Resource delete` for removing user in the corresponding producer: 
 
-```bash
-npm run test
-```
+`{   "topic": "challenge.action.resource.delete,   "originator": "topcoder-resource-api",   "timestamp": "2019-11-24T23:26:28.926Z",   "mime-type": "application/json",   "payload": {   "id": "47749b23-0e8c-44e0-b180-ae9364ffec37",   "challengeId": "5d9618ad-1937-47aa-b27d-e53680228925",   "memberId": "40154012",   "memberHandle": "tonyj",   "roleId": "cfe12b3f-2a24-4639-9d8b-ec86726f76bd" } }`
 
-To run unit tests with coverage report
+#### Note you can also use kafka host url in config and go to `https://lauscher.topcoder-dev.com/` and select the topic and send the message
 
-```bash
-npm run test:cov
-```
-
-## Verification
-
-See [Verification.md](./Verification.md)
+![issue 2](https://user-images.githubusercontent.com/53591918/69793790-1f683380-11ef-11ea-8f8c-343681cacbc8.png)

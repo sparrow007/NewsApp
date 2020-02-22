@@ -1,4 +1,4 @@
-# Topcoder - Challenge Vanilla Forum Integration Processor Verification
+# Topcoder - Challenge Vanilla Forum Integration Processor Validation
 
 - start the xampp server and at first time create database for vanilla forums that might found in (http://localhost/vanilla) (make admin creds)
 - start the kafka server

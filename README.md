@@ -1,452 +1,98 @@
-# ChallengePhases Api
+# Topcoder - Challenge Forum Processor
 
-All URIs are relative to **CHALLENGE_API_URL** configuration variable.
+## Dependencies
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**searchChallengePhases**](ChallengeTypesApi.md#searchchallengetypes) | **GET** /challengephases | Search challengeTypes.
-[**createChallengePhase**](ChallengeTypesApi.md#createchallengetype) | **POST** /challengephases | Create a challengeType.
-[**getChallengePhase**](ChallengeTypesApi.md#getchallengetype) | **GET** /challengephases/:challengePhaseId | Get the challengeType.
-[**updateChallengePhase**](ChallengeTypesApi.md#updatechallengetype) | **PUT** /challengephases/:challengePhaseId | Fully update challengeType.
-[**patchChallengePhase**](ChallengeTypesApi.md#patchchallengetype) | **PATCH** /challengephases/:challengePhaseId | Partially update challengeType.
-[**deleteChallengePhase**](ChallengeTypesApi.md#patchchallengetype) | **DELETE** /challengephases/:challengePhaseId | Delete the Challenge phase with provided challenge phase id.
+- nodejs https://nodejs.org/en/ (v10+)
+- Kafka
+- Mongodb
 
-<a name="searchChallengeTypes"></a>
-# **searchChallengePhases**
-> searchChallengePhases(reqQuery[, jwt])
+## Configuration
 
-Search challengePhase. Link headers are sent back and they have rel set to prev, next, first, last and contain the relevant URL.
+Configuration for the processor is at `config/default.js`.
+The following parameters can be set in config files or in env variables
 
-### Example
-```javascript
-const challengeApi = require('topcoder-challenge-api-wrapper')
-const challengeApiM2MClient = challengeApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
+- LOG_LEVEL: the log level; default value: 'debug'
+- TC_AUTHN_URL: TC_AUTHN_URL, used to get the access token
+- TC_USERNAME : TC USERNAME, used to make TC_AUTHN_REQUEST_BODY for getting the access token
+- TC_PASSWORD: TC PASSWORD, used to make TC_AUTHN_REQUEST_BODY for getting the access token
+- TC_CLIENT_ID: TC CLIENT ID is client id which is used to make TC_AUTHN_REQUEST_BODY for getting the access token
+- CLIENT_V2CONNECTION : CLIENT V2 CONNECTION, used to make TC_AUTHN_REQUEST_BODY for getting the access token
+- TC_AUTHZ_URL: TC AUTHZ URL , used to get the access token
+- KAFKA_URL : comma separated Kafka hosts for consumer to listen; default value: 'localhost:9092'
+- KAFKA_CLIENT_CERT: Kafka connection certificate, optional; default value is undefined; if not provided, then SSL connection is not used, direct insecure connection is used; if provided, it can be either path to certificate file or certificate content
+- KAFKA_CLIENT_CERT_KEY: Kafka connection private key, optional; default value is undefined; if not provided, then SSL connection is not used, direct insecure connection is used; if provided, it can be either path to private key file or private key content
+- MONGODB_URL: Mongodb uri , used to get connected with mongodb
+- USER_API_URL: User api url, used to get the user info ; default value : 'https://api.topcoder-dev.com/v3'
+- CREATE_CHALLENGE_TOPIC: create challenge kafka topic; default value : ''challenge.notification.create'
+- CHALLENGE_EVENT_TOPIC : create challenge event kafka topic which is user registration and unregistration from challenge; default value: 'challenge.notification.events'
+- CREATE_CHALLENGE_RESOURCE_TOPIC : create challenge resource kafka topic; default value: 'challenge.action.resource.create'
+- DELETE_CHALLENGE_RESOURCE_TOPIC: delete challenge resource kafka topic; default value: 'challenge.action.resource.delete'
 
-const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
-      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
-       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
+## Heroku deployment 
 
-const challengeApiJwtMethodArgClient = challengeApi(_.pick(config,
-      ['CHALLENGE_API_URL']))
-
-const reqQuery = {
-  page: 1,
-  perPage: 10,
-  name: 'test111'
-}
-
-
-// Promise model
-challengeApiM2MClient
-  .searchChallengePhases(reqQuery)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiUserCredentialsClient
-  .searchChallengePhases(reqQuery)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-
-challengeApiJwtMethodArgClient
-  .searchChallengePhases(reqQuery, config.JWT)
-// or
-// challengeApiJwtMethodArgClient
-//   .searchChallengeTypes(reqQuery)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await challengeApiM2MClient.searchChallengePhases(reqQuery)
-
-await challengeApiUserCredentialsClient.searchChallengePhases(reqQuery)
-
-await challengeApiJwtMethodArgClient.searchChallengePhases(reqQuery, config.JWT)
-// or
-// await challengeApiJwtMethodArgClient.searchChallengePhases(reqQuery)
+- Download and install the heroku CLI, download and installation link `https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up`
+- Go to heroku and create new app.
+- Login to heroku using your cli by typing "heroku login" and then enter your credentials
+- Initialize a git repository in existing directory 
+``` 
+$ git init
+$ heroku git:remote -a <your project> 
 ```
-
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **reqQuery** | [**SearchChallengePhasesCriteria**](SearchChallengePhasesCriteria.md)| the search challengePhases criteria
- **jwt**      | String | the optional json web token
-
-### Return type
-
-Array of [**ChallengePhase**](ChallengePhase.md)
-
-### Authorization
-
-**None**
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-<a name="createChallengePhase"></a>
-# **createChallengePhase**
-> createChallengePhase(reqBody[, jwt])
-
-Create a new challenge phase in the system. Only admins can access this endpoint.
-
-### Example
-```javascript
-const challengeApi = require('topcoder-challenge-api-wrapper')
-const challengeApiM2MClient = challengeApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
-      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
-       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
-
-const challengeApiJwtMethodArgClient = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
-
-const reqBody = {
-  name: 'Code',
-  description: 'Code',
-  predecessor: 'code-string'
-  isActive: true,
-  duration: 15
-}
-
-
-// Promise model
-challengeApiM2MClient
-  .createChallengePhase(reqBody)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiUserCredentialsClient
-  .createChallengePhase(reqBody)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiJwtMethodArgClient
-  .createChallengePhase(reqBody, config.JWT)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await challengeApiM2MClient.createChallengePhase(reqBody)
-
-await challengeApiUserCredentialsClient.createChallengePhase(reqBody)
-
-await challengeApiJwtMethodArgClient.createChallengePhase(reqBody, config.JWT)
+- Deploy your application Commit your code to the repository and deploy it to Heroku using Git.
+``` 
+$ git add .
+$ git commit -am "make it better"
+$ git push heroku master
 ```
+#### NOTE you should have Procfile in your root directory for running your node app and below code in the procfile
 
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **reqBody** | [**ChallengePhaseData**](ChallengePhaseData.md)| the challengeType data
- **jwt**      | String | the optional json web token
-
-### Return type
-
-[**ChallengePhase**](ChallengePhase.md)
-
-### Authorization
-
-[Bearer](../README.md#authorization)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-<a name="getChallengePhase"></a>
-# **getChallengePhase**
-> getChallengePhase(challengePhaseId[, jwt])
-
-Get the challengePhase by id.
-
-### Example
-```javascript
-const challengeApi = require('topcoder-challenge-api-wrapper')
-const challengeApiM2MClient = challengeApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
-      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
-       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
-
-const challengeApiJwtMethodArgClient = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
-
-const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
-
-// Promise model
-challengeApiM2MClient
-  .getChallengePhase(challengePhaseId)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiUserCredentialsClient
-  .getChallengePhase(challengePhaseId)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiJwtMethodArgClient
-  .getChallengePhase(challengeTypeId, config.JWT)
-// or
-// challengeApiJwtMethodArgClient
-//   .getChallengeType(challengePhaseId)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await challengeApiM2MClient.getChallengeType(challengePhaseId)
-
-await challengeApiUserCredentialsClient.getChallengePhase(challengePhaseId)
-
-await challengeApiJwtMethodArgClient.getChallengePhase(challengePhaseId, config.JWT)
-// or
-// await challengeApiJwtMethodArgClient.getChallengePhase(challengePhaseId)
-
+``` 
+Worker : node src/app.js
 ```
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **challengePhaseId** | String | the challengePhase id
- **jwt**      | String | the optional json web token
-
-### Return type
-
-[**ChallengePhase**](ChallengePhase.md)
-
-### Authorization
-
-**None**
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-<a name="updateChallengePhase"></a>
-# **updateChallengePhase**
-> updateChallengePhase(challengePhaseId, reqBody[, jwt])
-
-Fully update challenge phase.
-
-### Example
-```javascript
-const challengeApi = require('topcoder-challenge-api-wrapper')
-const challengeApiM2MClient = challengeApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
-      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
-       'TC_CLIENT_V2_CONNECTION', 'CHALLENGE_API_URL']))
-
-const challengeApiJwtMethodArg = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
-
-const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
-const reqBody = {
- name: 'Code', 
- description : 'code string', 
- predecessor : 'valuetest', 
- isActive : false,
- duration : 112
-}
-
-
-// Promise model
-challengeApiM2MClient
-  .updateChallengePhase(challengePhaseId, reqBody)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiUserCredentialsClient
-  .updateChallengePhase(challengePhaseId, reqBody)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiJwtMethodArgClient
-  .updateChallengePhase(challengePhaseId, reqBody, config.JWT)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await challengeApiM2MClient.updateChallengePhase(challengePhaseId, reqBody)
-
-await challengeApiUserCredentialsClient.updateChallengePhase(challengePhaseId, reqBody)
-
-await challengeApiJwtMethodArgClient.updateChallengePhase(challengePhaseId, reqBody, config.JWT)
-```
-
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **challengePhaseId** | String | the challengePhase id
- **reqBody** | [**ChallengePhaseData**](ChallengePhaseData.md)| the challengeType data
- **jwt**      | String | the optional json web token
-
-### Return type
-
-[**ChallengePhase**](ChallengePhase.md)
-
-### Authorization
-
-[Bearer](../README.md#authorization)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-<a name="patchChallengePhase"></a>
-# **patchChallengePhase**
-> patchChallengePhase(challengePhaseId, reqBody[, jwt])
-
-Partially update challengePhase.
-
-### Example
-```javascript
-const challengeApi = require('topcoder-challenge-api-wrapper')
-const challengeApiM2MClient = challengeApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
-      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
-       'TC_CLIENT_V2_CONNECTION', 'CHALLENGE_API_URL']))
-
-const challengeApiJwtMethodArg = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
-
-const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
-const reqBody = {
-  name: 'BugTest',
-  description: 'Bug test',
-  isActive: false
-}
-
-// Promise model
-challengeApiM2MClient
-  .patchChallengePhase(challengePhaseId, reqBody)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiUserCredentialsClient
-  .patchChallengePhase(challengePhaseId, reqBody)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiJwtMethodArgClient
-  .patchChallengePhase(challengePhaseId, reqBody, config.JWT)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await challengeApiM2MClient.patchChallengePhase(challengePhaseId, reqBody)
-
-await challengeApiUserCredentialsClient.patchChallengePhase(challengePhaseId, reqBody)
-
-await challengeApiJwtMethodArgClient.patchChallengePhase(challengePhaseId, reqBody, config.JWT)
-```
-
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **challengePhaseId** | String | the challengePhaseId id
- **reqBody** | [**ChallengePhaseData**](ChallengePhaseData.md)| the challengeType data
- **jwt**      | String | the optional json web token
-
-### Return type
-
-[**ChallengePhase**](ChallengePhase.md)
-
-### Authorization
-
-[Bearer](../README.md#authorization)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
- 
-<a name="deleteChallengePhase"></a>
-# **deleteChallengePhase**
-> deleteChallengePhase(challengePhaseId[, jwt])
-
-delete the challengePhase by id.
-
-### Example
-```javascript
-const challengeApi = require('topcoder-challenge-api-wrapper')
-const challengeApiM2MClient = challengeApi(_.pick(config,
-      ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME',
-        'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'CHALLENGE_API_URL',
-        'AUTH0_PROXY_SERVER_URL']))
-
-const challengeApiUserCredentialsClient = challengeApi(_.pick(config,
-      ['USERNAME', 'PASSWORD', 'TC_AUTHN_URL', 'TC_AUTHZ_URL', 'TC_CLIENT_ID',
-       'TC_CLIENT_V2CONNECTION', 'CHALLENGE_API_URL']))
-
-const challengeApiJwtMethodArgClient = challengeApi(_.pick(config, 'CHALLENGE_API_URL'))
-
-const challengePhaseId = '8f4e8b6a-0ad2-4ff6-ab19-afeb102ff3b4'
-
-// Promise model
-challengeApiM2MClient
-  .deleteChallengePhase(challengePhaseId)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiUserCredentialsClient
-  .deleteChallengePhase(challengePhaseId)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-challengeApiJwtMethodArgClient
-  .deleteChallengePhase(challengeTypeId, config.JWT)
-// or
-// challengeApiJwtMethodArgClient
-//   .deleteChallengePhase(challengePhaseId)
-  .then(result => console.log(result.body, result.status))
-  .catch(err => console.log(err))
-
-// Async / await model
-await challengeApiM2MClient.deleteChallengePhase(challengePhaseId)
-
-await challengeApiUserCredentialsClient.deleteChallengePhase(challengePhaseId)
-
-await challengeApiJwtMethodArgClient.deleteChallengePhase(challengePhaseId, config.JWT)
-// or
-// await challengeApiJwtMethodArgClient.deleteChallengePhase(challengePhaseId)
-
-```
-### Parameters
-
-Name | Type | Description
-------------- | ------------- | -------------
- **challengePhaseId** | String | the challengePhase id
- **jwt**      | String | the optional json web token
-
-### Return type
-
-[**ChallengePhase**](ChallengePhase.md)
-
-### Authorization
-
-**None**
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
+#### NOTE
+You can use the mongolab for your mongodb database and provide the mongodb uri using environment variable `MONGODB_URL`
+
+## Local Kafka setup
+
+- `http://kafka.apache.org/quickstart` contains details to setup and manage Kafka server,
+  below provides details to setup Kafka server in Mac, Windows will use bat commands in bin/windows instead
+- download kafka at `https://www.apache.org/dyn/closer.cgi?path=/kafka/1.1.0/kafka_2.11-1.1.0.tgz`
+- extract out the downloaded tgz file
+- go to extracted directory kafka_2.11-0.11.0.1
+- start ZooKeeper server:
+  `bin/zookeeper-server-start.sh config/zookeeper.properties`
+- use another terminal, go to same directory, start the Kafka server:
+  `bin/kafka-server-start.sh config/server.properties`
+- note that the zookeeper server is at localhost:2181, and Kafka server is at localhost:9092
+- Use another terminal, go to same directory, create some topics:
+  `bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic challenge.notification.create`
+  `bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic challenge.notification.events`
+  `bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic challenge.action.resource.create`
+  `bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic challenge.action.resource.delete`
+- Verify that the topics are created:
+  `bin/kafka-topics.sh --list --zookeeper localhost:2181`,
+  it should list out the created topics
+- run the producer and then write some message into the console to send to the `challenge.notification.events` topic:
+  `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic challenge.notification.events`
+  in the console, write message, one message per line:
+  `{   "topic": "challenge.notification.events",   "originator": "topcoder-challenges-api",   "timestamp": "2019-11-24T23:26:28.926Z",   "mime-type": "application/json",   "payload": {     "type": "USER_UNREGISTRATION",     "data": {   "challengeId": "b0b96d7f-2e7b-4a1d-a894-165e55b01d2d",       "userId": 40158988     }   }`
+- Optionally, use another terminal, go to same directory, start a consumer to view the messages:
+  `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic challenge.notification.events --from-beginning`
+- If the kafka don't allow to input long message you can use this script to write message from file:
+  `path_to_kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic challenge.notification.events < our_project_root_directory/test/data/project/challenge.notification.events.json`
+- Writing/reading messages to/from other topics are similar. All example for messages are in:
+`our_project_root_directory/test/data`
+
+## Local Mongodb setup
+- download the mongodb from `https://www.mongodb.com/download-center/community`
+- Install it in your os , for installing doc `https://docs.mongodb.com/manual/administration/install-community/`
+- Run the mongodb localy , default mongodb runs on 27017 port
+
+## Local deployment
+
+- Install dependencies `npm i`
+- Run code lint check `npm run lint`, running `npm run lint:fix` can fix some lint errors if any
+- Start processor app `npm start`
+
+## Verification
+Refer to the verification document `Verification.md`

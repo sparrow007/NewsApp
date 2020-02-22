@@ -82,3 +82,11 @@ Used the mongodb for storing the challengeId and roleID
 #### Mlab setup
 
 - You can also use mLab and store the uri of mLab db in MONGODB_URL in config see the README.MD
+
+##  TC env values for validation
+
+ AUTH0_URL = 'https://topcoder-dev.auth0.com/oauth/token'
+ AUTH0_AUDIENCE = 'https://m2m.topcoder-dev.com/'
+ AUTH0_CLIENT_ID = 'LU2Nt7YPHQ3lxrFNKitJ82syB4wIMR7G'
+ AUTH0_CLIENT_SECRET= 'O8S2YOb-0lI4NS3smR4d4uf0VM9BN0y1Ra4ABRktGUPOXc34mUO25uJrCpU-TBAT'
+ AUTH0_PROXY_SERVER_URL= 'https://auth0proxy.topcoder-dev.com/token'

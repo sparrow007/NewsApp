@@ -4,7 +4,8 @@
 
 It is a notes app which is based on neumorphism user interface and also provide dark theme.
 
-![Note app feature 1 0](https://user-images.githubusercontent.com/22986571/104268772-b8711100-54ba-11eb-8317-a491781ed1fc.jpg)
+(![layout manager recyclerview](https://user-images.githubusercontent.com/22986571/111025645-76594280-840b-11eb-91ab-e2446509c38e.jpg)
+)
 
 
 ## Architecture
